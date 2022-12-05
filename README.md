@@ -1,2 +1,2 @@
 # R-statistics
-The goal of this project in to show how can use The R programming language for analysing data 
+The goal of this project is to show how can use The R programming language for Data analysis 
