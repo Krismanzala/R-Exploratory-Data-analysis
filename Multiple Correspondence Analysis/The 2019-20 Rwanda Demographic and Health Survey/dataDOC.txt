@@ -1,0 +1,213 @@
+[12949 obs. x 53 variables] tbl_df tbl data.frame
+
+$HHID: Case Identification
+character: "       1   1" "       1   3" "       1   4" "       1   5" "       1   6" "       1   7" "       1   8" "       1   9" "       1  10" "       1  11" ...
+NAs: 0 (0%) - 12949 unique values
+
+$HV005: Household sample weight (6 decimals)
+numeric: 1454022 1454022 1454022 1454022 1454022 1454022 1454022 1454022 1454022 1454022 ...
+min: 99458 - max: 3323115 - NAs: 0 (0%) - 500 unique values
+
+$HV009: Number of household members
+numeric: 1 5 1 4 4 5 1 3 6 4 ...
+min: 1 - max: 16 - NAs: 0 (0%) - 16 unique values
+
+$HV014: Number of children 5 and under (de jure)
+numeric: 0 0 0 1 0 1 0 0 2 2 ...
+min: 0 - max: 6 - NAs: 0 (0%) - 7 unique values
+
+$HV024: Region
+numeric: 1 1 1 1 1 1 1 1 1 1 ...
+min: 1 - max: 5 - NAs: 0 (0%) - 5 unique values
+
+$HV025: Type of place of residence
+numeric: 2 2 2 2 2 2 2 2 2 2 ...
+min: 1 - max: 2 - NAs: 0 (0%) - 2 unique values
+
+$HV201: Source of drinking water
+numeric: 14 14 14 14 14 14 14 14 14 14 ...
+min: 11 - max: 96 - NAs: 0 (0%) - 15 unique values
+
+$HV202: Source of non-drinking water
+numeric: NA NA NA NA NA NA NA NA NA NA ...
+min: 11 - max: 71 - NAs: 12634 (97.6%) - 10 unique values
+
+$HV201A: NA - Water not available for at least a day last two weeks
+numeric: NA NA NA NA NA NA NA NA NA NA ...
+min: NA - max: NA - NAs: 12949 (100%) - 1 unique values
+
+$HV204: Time to get to water source (minutes)
+numeric: 90 60 30 60 10 60 10 20 60 40 ...
+min: 0 - max: 998 - NAs: 0 (0%) - 77 unique values
+
+$HV205: Type of toilet facility
+numeric: 22 22 22 22 22 22 22 22 22 22 ...
+min: 11 - max: 41 - NAs: 0 (0%) - 10 unique values
+
+$HV206: Has electricity
+numeric: 1 1 1 1 1 1 1 1 1 1 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$HV207: Has radio
+numeric: 0 0 0 1 1 0 0 1 0 1 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$HV208: Has television
+numeric: 0 0 0 1 0 0 0 0 0 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$HV209: Has refrigerator
+numeric: 0 0 0 0 0 0 0 0 0 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$HV210: Has bicycle
+numeric: 0 0 0 1 0 0 0 0 0 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$HV211: Has motorcycle/scooter
+numeric: 0 0 0 1 0 0 0 0 0 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$HV212: Has car/truck
+numeric: 0 0 0 0 0 0 0 0 0 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$HV213: Main floor material
+numeric: 11 34 11 34 11 11 34 34 34 11 ...
+min: 11 - max: 96 - NAs: 0 (0%) - 9 unique values
+
+$HV214: Main wall material
+numeric: 36 31 21 36 21 36 36 24 36 24 ...
+min: 11 - max: 96 - NAs: 0 (0%) - 14 unique values
+
+$HV215: Main roof material
+numeric: 31 31 31 31 31 31 31 31 31 31 ...
+min: 11 - max: 96 - NAs: 0 (0%) - 9 unique values
+
+$HV216: Number of rooms used for sleeping
+numeric: 1 2 3 5 2 2 2 2 3 2 ...
+min: 1 - max: 12 - NAs: 0 (0%) - 10 unique values
+
+$HV217: Relationship structure
+numeric: 1 4 1 2 4 2 1 4 2 2 ...
+min: 0 - max: 5 - NAs: 0 (0%) - 6 unique values
+
+$HV218: Line number of head of household
+numeric: 1 1 1 1 1 1 1 1 1 1 ...
+min: 1 - max: 1 - NAs: 0 (0%) - 1 unique values
+
+$HV219: Sex of head of household
+numeric: 2 2 2 1 2 1 1 2 1 1 ...
+min: 1 - max: 2 - NAs: 0 (0%) - 2 unique values
+
+$HV220: Age of head of household
+numeric: 70 58 42 34 68 47 25 58 39 33 ...
+min: 16 - max: 98 - NAs: 0 (0%) - 81 unique values
+
+$HV221: Has telephone (land-line)
+numeric: 0 0 0 0 0 0 0 0 0 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$HV225: Share toilet with other households
+numeric: 1 0 0 0 0 1 0 0 1 0 ...
+min: 0 - max: 1 - NAs: 400 (3.1%) - 3 unique values
+
+$HV226: Type of cooking fuel
+numeric: 9 9 9 8 9 9 9 8 8 9 ...
+min: 1 - max: 96 - NAs: 0 (0%) - 13 unique values
+
+$HV227: Has mosquito bed net for sleeping
+numeric: 1 1 1 1 1 1 1 1 1 1 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$HV228: Children under 5 slept under mosquito bed net last night
+numeric: NA 1 NA NA NA 1 NA NA 1 1 ...
+min: 0 - max: 3 - NAs: 6742 (52.1%) - 5 unique values
+
+$HV235: Location of source for water
+numeric: 3 3 3 3 3 3 3 3 3 3 ...
+min: 1 - max: 3 - NAs: 2259 (17.4%) - 4 unique values
+
+$HV243A: Has mobile telephone
+numeric: 0 1 0 1 1 1 1 1 1 1 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$HV243B: Has watch
+numeric: 0 0 0 0 1 0 0 1 0 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$HV243C: Has animal-drawn cart
+numeric: 0 0 0 0 0 0 0 0 0 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$HV243D: Has boat with a motor
+numeric: 0 0 0 0 0 0 0 0 0 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$HV243E: Has a computer
+numeric: 0 1 0 0 0 0 0 0 1 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$HV244: Owns land usable for agriculture
+numeric: 1 1 1 1 1 0 1 1 1 1 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$HV246: Owns livestock, herds or farm animals
+numeric: 0 1 0 0 1 1 1 0 0 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$SH121G: Mattress
+numeric: 0 1 1 1 1 1 1 1 1 1 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$SH121H: Bench or at least 3 chairs
+numeric: 1 0 1 1 1 1 1 1 1 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$SH121I: Bed
+numeric: 0 1 1 1 0 1 1 1 1 1 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$SH121J: Table
+numeric: 0 1 1 1 1 1 0 1 1 1 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$SH121K: Sofa
+numeric: 0 1 0 1 0 1 0 1 1 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$SH121L: Traditional improved stove
+numeric: 0 0 0 1 0 0 0 1 1 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$SH121M: Stove
+numeric: 0 0 0 1 0 0 0 0 0 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$SH121N: Cupboard
+numeric: 0 0 0 1 0 0 0 0 1 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$SH121O: Dining table
+numeric: 0 0 0 1 0 0 0 1 1 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$SH121P: Iron machine
+numeric: 0 0 0 1 0 0 1 0 1 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$SH121Q: Laundry machine
+numeric: 0 0 0 0 0 0 0 0 0 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$SH121R: Satelite dish
+numeric: 0 0 0 0 0 0 0 0 0 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$SH122H: Boat without a motor
+numeric: 0 0 0 0 0 0 0 0 0 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
+
+$SH122I: Camera
+numeric: 0 0 0 0 0 0 0 0 0 0 ...
+min: 0 - max: 1 - NAs: 0 (0%) - 2 unique values
