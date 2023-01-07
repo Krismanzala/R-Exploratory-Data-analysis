@@ -1,5 +1,5 @@
 ---
-title: "Projet_Rwandan household equipments and type of place of residence"
+title: "Projet_Rwandan households equipments and type of place of residence"
 author: "Karim GAFFIERO, Issa GOUKOUNI, Christian MANZALA KUMBI"
 date: '2022-11-24'
 output:
