@@ -1,0 +1,1029 @@
+---
+title: "Projet_Données Catégorielles"
+author: "Karim GAFFIERO, Issa GOUKOUNI, Christian MANZALA KUMBI"
+date: '2022-11-24'
+output:
+  word_document: 'Yes'
+  pdf_document:  'Yes'
+  html_document: default
+---
+
+
+```{r Préparation environnement, echo = FALSE}
+
+library(haven)
+library(tidyverse)
+library(ggplot2)
+library(FactoMineR)
+library(Factoshiny)
+library(factoextra)
+#install.packages("questionr")
+library(questionr)
+library(grid)
+library(gtable)
+library(labelled)
+library(gridExtra)
+library(gmodels)
+#install.packages("gmodels")
+#install.packages("gtools")
+library(ade4)
+#install.packages("wesanderson")
+library(wesanderson)
+
+```
+
+
+```{r Import}
+
+MENAGE <- read_sas("RWHR81FL.SAS7BDAT")
+
+```
+
+
+```{r Lecture et pré-traitement des données}
+
+menage <- MENAGE %>% select( HHID, HV005, HV009, HV014, HV024, HV025, HV201:HV228, HV235, HV243A:HV243E, HV244, HV246, SH121G:SH122I)
+
+write.table(menage, "menage.Rdata") # Sauvegarde du nouveau jeu de données
+
+
+#dataDOC <- describe(menage) # Description des variables
+
+#sink("dataDOC.txt")
+
+#dataDOC
+
+#sink(NULL)
+
+                                  
+
+menage <- menage[,c(-8,-9,-28,-31,-32)] #Suppression des variables HV202, HV201A, HV228 et HV235 qui possèdent trop de valeurs manquantes
+
+
+
+var_label(menage) <- list(HHID = "Identifiant", 
+                          HV005 = "Poids de l'échantillon du ménage", 
+                          HV009 = "Nombre de membres du ménage", 
+                          HV014 = "Nombre d'enfant de 5 ans et moins",
+                          HV024 = "Region", 
+                          HV025 = "Type du lieu de résidence",
+                          HV201 = "Source d'eau potable",
+                          HV204 ="Temps pour se rendre à la source d'eau (en min)",
+                          HV205 ="Type d'installations sanitaires", 
+                          HV206 ="Possède l'électricité", 
+                          HV207 ="Possède une radio", 
+                          HV208 ="Possède une télévision", 
+                          HV209 ="Possède un réfrigérateur",
+                          HV210 ="Possède un vélo",
+                          HV211 ="Possède une moto/scooter",
+                          HV212 ="Possède une voiture/camion", 
+                          HV213 ="Matériau principal du sol", 
+                          HV214 ="Matériau principal du mur",
+                          HV215 ="Matériau principal du toit",
+                          HV216 ="Nombre de pièces utilisées pour dormir",
+                          HV217 ="Structure des relations",
+                          HV218 ="Numéro de ligne du chef de famille",
+                          HV219 ="Sexe du chef du ménage",
+                          HV220 ="Age du chef du ménage",
+                          HV221 ="Possède un téléphone fixe",
+                          HV226 ="Type de combustible de cuisson",
+                          HV227 ="Possède une moustiquaire",
+                          HV243A = "Possède un téléphone mobile",
+                          HV243B = "Possède une montre",
+                          HV243C = "Possède un chariot de tirage animal",
+                          HV243D = "Possède un bateau avec moteur",
+                          HV243E = "Possède un ordinateur",
+                          HV244 = "Possède un terrain pour l'agriculture",
+                          HV246 = "Possède du bétail/troupeau/ferme animale",
+                          SH121G = "Possède un matelas",                                         
+                          SH121H = "Possède un banc ou 3 chaises au moins",
+                          SH121I = "Possède un lit",                                             
+                          SH121J = "Possède un table",                                           
+                          SH121K = "Possède un canapé",                                            
+                          SH121L = "Possède une poêle traditionnelle amélioréé",
+                          SH121M = "Possède un poêle",
+                          SH121N = "Possède une armoire",
+                          SH121O = "Possède une table à manger", 
+                          SH121P = "Possède un fer à repasser",
+                          SH121Q = "Possède une machine à laver",    
+                          SH121R = "Possède une antenne parabolique",
+                          SH122H = "Possède un bateau sans moteur",
+                          SH122I = "Possède une caméra") #labellisation des variables
+
+```
+
+
+
+```{r les modalités des variables intéressantes}
+
+
+menage[5] <- as.character(menage[[5]])
+menage[5] <- fct_recode(menage[[5]],
+                        "kigali" = "1",
+                        "sud" = "2",
+                        "ouest" = "3",
+                        "nord" = "4",
+                        "est" = "5")
+
+
+menage[6] <- as.character(menage[[6]])
+menage[6] <- fct_recode(menage[[6]],
+                        "urbain" = "1",  
+                        "rural" = "2")
+
+
+
+
+menage[23] <- as.character(menage[[23]])
+menage[23] <- fct_recode(menage[[23]],
+                         "male" = "1" ,
+                         "female"= "2",
+                         NULL = "9")
+
+
+
+
+menage[25] <- as.character(menage[[25]])
+menage[25] <- fct_recode(menage[[25]],
+                         "No" = "0" ,
+                         "Yes"= "1",
+                         NULL = "9")
+
+
+
+
+for (i in 10:16) {
+menage[i] <- as.character(menage[[i]])
+menage[i] <- fct_recode(menage[[i]],
+"No" = "0" ,
+"Yes" = "1",
+NULL = "9")
+}
+
+
+
+for (i in 27:48) {
+menage[i] <- as.character(menage[[i]])
+menage[i] <- fct_recode(menage[[i]],
+"No" = "0" ,
+"Yes"= "1",
+NULL = "9")
+}
+
+
+write_rds(menage, "menage.rds")
+
+```
+
+
+
+```{r Création des fonctions utiles}
+
+#La fonction du tri à plat
+
+triaplat <- function (data,k) {
+  a = freq(data[k])
+freq <- cbind(a[c(1,2)],cumsum(a[c(1,2)]))
+n = nrow(freq)
+test = matrix(0, n, 2)
+
+for (i in 1:n) {
+ 
+  t = prop.test(freq$n[i], sum(freq$n))
+  test[i,1] <- t$conf.int[1] * 100
+  test[i,2] <- t$conf.int[2] * 100
+  
+}
+
+freq <- cbind(freq, test)
+colnames(freq) <- c("Effectif", "Fréquence", "Effectif_Cumulé", "Fréquence_cumulé", "Borneinferieur", "Borne_supérieur")
+freq
+
+  
+}
+
+#Format PDF avec grid et gtable
+
+TraceTable <- function (titre,fn,Data) {
+  table <- tableGrob(Data)
+
+
+title <- textGrob(titre,gp=gpar(fontsize=20))
+footnote <- textGrob(fn, x=0, hjust=0,
+                     gp=gpar( fontface="italic"))
+
+padding <- unit(0.5,"line")
+table <- gtable_add_rows(table, 
+                         heights = grobHeight(title) + padding,
+                         pos = 0)
+table <- gtable_add_rows(table, 
+                         heights = grobHeight(footnote)+ padding)
+table <- gtable_add_grob(table, list(title, footnote),
+                         t=c(1, nrow(table)), l=c(1,2), 
+                         r=ncol(table))
+grid.newpage()
+grid.draw(table)
+}
+
+```
+
+
+
+```{r Tri à plat}
+
+#Quelques tris 
+
+pdf(file = "Tri_a_plat.pdf",
+    width = 10,
+    height = 7)
+
+#6
+
+plot.new()
+
+grid.table(round(triaplat(menage,6),digits = 2))
+
+a = data.frame(Type = c("Urbain", "Rural"))
+a = cbind(a, triaplat(menage,6))
+
+posa = a$Fréquence_cumulé - 0.5 * a$Fréquence
+
+ggplot(a, aes(x = "", y = Fréquence, fill = Type)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  geom_text(aes(y = posa, label = Fréquence), color = "black") +
+  theme_void()  +
+  labs(title = "Type du lieu d'habitation")
+
+#10
+
+plot.new()
+grid.table(round(triaplat(menage,10),digits = 2))
+
+b = data.frame(Type = c("Non", "Oui"))
+b = cbind(b, triaplat(menage,10))
+
+ggplot(b, aes(x = "", y = Fréquence, fill = Type)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  geom_text(aes(y = c(60,7), label = Fréquence), color = "black") +
+  theme_void() +
+  labs(title = "Le ménage possède-t-il l'éléctricité ?")
+
+
+#11
+
+plot.new()
+grid.table(round(triaplat(menage,11),digits = 2))
+
+b = data.frame(Type = c("Non", "Oui"))
+b = cbind(b, triaplat(menage,11))
+
+ggplot(b, aes(x = "", y = Fréquence, fill = Type)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  geom_text(aes(y = c(60,7), label = Fréquence), color = "black") +
+  theme_void() +
+  labs(title = "Le ménage possède-t-il une radio ?")
+
+
+
+#12
+
+plot.new()
+grid.table(round(triaplat(menage,12),digits = 2))
+
+b = data.frame(Type = c("Non", "Oui"))
+b = cbind(b, triaplat(menage,12))
+
+ggplot(b, aes(x = "", y = Fréquence, fill = Type)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  geom_text(aes(y = c(60,15), label = Fréquence), color = "black") +
+  theme_void() +
+  labs(title = "Le ménage possède-t-il une télévision ?")
+
+
+#13
+
+plot.new()
+grid.table(round(triaplat(menage,13),digits = 2))
+
+b = data.frame(Type = c("Non", "Oui"))
+b = cbind(b, triaplat(menage,13))
+
+ggplot(b, aes(x = "", y = Fréquence, fill = Type)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  geom_text(aes(y = c(60,7), label = Fréquence), color = "black") +
+  theme_void() +
+  labs(title = "Le ménage possède-t-il un réfrigérateur ?")
+
+#14
+
+plot.new()
+grid.table(round(triaplat(menage,14),digits = 2))
+
+b = data.frame(Type = c("Non", "Oui"))
+b = cbind(b, triaplat(menage,14))
+
+ggplot(b, aes(x = "", y = Fréquence, fill = Type)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  geom_text(aes(y = c(60,7), label = Fréquence), color = "black") +
+  theme_void() +
+  labs(title = "Le ménage possède-t-il un vélo ?")
+
+#15
+
+plot.new()
+grid.table(round(triaplat(menage,15),digits = 2))
+
+b = data.frame(Type = c("Non", "Oui"))
+b = cbind(b, triaplat(menage,15))
+
+ggplot(b, aes(x = "", y = Fréquence, fill = Type)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  geom_text(aes(y = c(60,7), label = Fréquence), color = "black") +
+  theme_void() +
+  labs(title = "Le ménage possède-t-il une moto/scooter ?")
+
+#16
+
+plot.new()
+grid.table(round(triaplat(menage,16),digits = 2))
+
+b = data.frame(Type = c("Non", "Oui"))
+b = cbind(b, triaplat(menage,16))
+
+ggplot(b, aes(x = "", y = Fréquence, fill = Type)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  geom_text(aes(y = c(60,7), label = Fréquence), color = "black") +
+  theme_void() +
+  labs(title = "Le ménage possède-t-il une voiture/camion ?")
+
+
+#23
+
+plot.new()
+grid.table(round(triaplat(menage,23),digits = 2))
+
+d = data.frame(Type = c('Homme', 'Femme'))
+d = cbind(d, triaplat(menage,23))
+
+
+ggplot(d, aes(x = "", y = Fréquence, fill = Type)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  geom_text(aes(y = c(25, 75), label = Fréquence), color = "black") +
+  theme_void()  +
+  labs(title = "Sexe du chef du ménage ")
+
+
+
+#25
+
+plot.new()
+grid.table(round(triaplat(menage,25),digits = 2))
+
+b = data.frame(Type = c("Non", "Oui"))
+b = cbind(b, triaplat(menage,25))
+
+ggplot(b, aes(x = "", y = Fréquence, fill = Type)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  geom_text(aes(y = c(60,7), label = Fréquence), color = "black") +
+  theme_void() +
+  labs(title = "Le ménage possède-t-il un téléphone fixe ?")
+
+
+
+#33
+
+plot.new()
+grid.table(round(triaplat(menage,33),digits = 2))
+
+b = data.frame(Type = c("Non", "Oui"))
+b = cbind(b, triaplat(menage,33))
+
+ggplot(b, aes(x = "", y = Fréquence, fill = Type)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  geom_text(aes(y = c(60,7), label = Fréquence), color = "black") +
+  theme_void() +
+  labs(title = "Le ménage possède-t-il un terrain pour l'agriculture ?")
+
+
+#34
+
+plot.new()
+grid.table(round(triaplat(menage,34),digits = 2))
+
+b = data.frame(Type = c("Non", "Oui"))
+b = cbind(b, triaplat(menage,34))
+
+ggplot(b, aes(x = "", y = Fréquence, fill = Type)) +
+  geom_bar(width = 1, stat = "identity", color = "white") +
+  coord_polar("y", start = 0) +
+  geom_text(aes(y = c(60,7), label = Fréquence), color = "black") +
+  theme_void() +
+  labs(title = "Le ménage possède-t-il du bétail/troupeau/ferme animale ?")
+
+
+dev.off()
+
+
+```
+
+
+
+```{r Tri croisé}
+
+#Quelques croisements 
+
+tab1 <- table(menage$HV024,menage$HV025) # Région croisée avec Type du lieu de résidence
+
+
+tab2 = table(menage$HV025,menage$HV206) #Type du lieu de résidence croisé avec possède l'électricité
+
+tab3 = table(menage$HV206,menage$HV208)# Possède l'électricité croisée avec possède une télévision
+
+
+tab4 = table(menage$HV206,menage$HV209) #Possède l'électricité croisée avec possède un réfrigérateur
+
+tab5 = table(menage$HV206,menage$SH121R) #Possède l'électricité croisée avec possède une antenne parabolique
+
+tab6 = table(menage$HV025,menage$HV211) #Type du lieu de résidence croisé avec possède une moto/scooter
+
+tab7 = table(menage$HV025,menage$HV212) #Type du lieu de résidence croisé avec possède une voiture/camion
+
+tab8 = table(menage$HV025,menage$HV219) #Type du lieu de résidence croisé avec sexe du chef du ménage
+
+tab9 = table(menage$HV025,menage$HV227) #Type du lieu de résidence croisé avec possède une moustiquaire
+
+tab10 = table(menage$HV206,menage$HV243D) #Type du lieu de résidence croisé avec possède un bateau avec moteur
+
+tab11 = table(menage$HV025,menage$HV243E) #Type du lieu de rédidence crosiée avec possède un ordinateur
+
+tab12 = table(menage$HV025,menage$HV244) #Type du lieu de résidence croisé avec possède un terrain pour l'agriculture
+
+tab13 = table(menage$HV025,menage$HV246)  #Type du lieu de résidence croisé avec possède un bétail/troupeau
+
+tab14 = table(menage$HV206,menage$SH122H) #Possède l'électricité croisée avec possède un bateau sans moteur
+
+
+
+pdf(file = "test1.PDF",
+    width = 6,
+    height = 3)
+
+  b = chisq.test(tab2)
+  a = CrossTable(tab2, na.rm = TRUE)
+  TraceTable("Table",
+             "électricité", 
+             a[["t"]])
+  TraceTable("Table théorique",
+             "électricté",
+             round(b[["expected"]],digits = 2))
+  TraceTable("Profil ligne",
+             "électricité",
+             round(a[["prop.row"]],digits = 2))
+  TraceTable("Profil col.", 
+             "électricité",
+             round(a[["prop.col"]],digits = 2))
+  TraceTable("P-value",
+             "électricité",
+             round(data.frame(chi_2 = b[["statistic"]][["X-squared"]] ,p_value = b[["p.value"]], digits = 2 )))
+  
+dev.off()
+  
+
+
+
+pdf(file = "test2.PDF",
+    width = 6,
+    height = 3) 
+
+
+  b = chisq.test(tab6)
+  a = CrossTable(tab6, na.rm = TRUE)
+  TraceTable("Table",
+             "moto/scooter", 
+             a[["t"]])
+  TraceTable("Table théorique",
+             "moto/scooter",
+             round(b[["expected"]],digits = 2))
+  TraceTable("Profil ligne",
+             "moto/scooter",
+             round(a[["prop.row"]],digits = 2))
+  TraceTable("Profil col.", 
+             "moto/scooter",
+             round(a[["prop.col"]],digits = 2))
+  TraceTable("P-value",
+             "moto/scooter",
+             round(data.frame(chi_2 = b[["statistic"]][["X-squared"]] ,p_value = b[["p.value"]], digits = 2 )))
+dev.off()
+  
+
+
+  
+pdf(file = "test3.PDF",
+    width = 6,
+    height = 3)
+  
+  b = chisq.test(tab7)
+  a = CrossTable(tab7, na.rm = TRUE)
+  TraceTable("Table",
+             "voiture",
+             a[["t"]])
+  TraceTable("Table théorique",
+             "voiture",
+             round(b[["expected"]],digits = 2))
+  TraceTable("Profil ligne",
+             "voiture",
+             round(a[["prop.row"]],digits = 2))
+  TraceTable("Profil colonne", 
+             "voiture",
+             round(a[["prop.col"]],digits = 2))
+  TraceTable("P-value",
+             "voiture",
+             round(data.frame(chi_2 = b[["statistic"]][["X-squared"]] ,p_value = b[["p.value"]], digits = 2 ) ) )  
+dev.off()
+
+
+pdf(file = "test4.PDF",
+    width = 6,
+    height = 3)
+  
+  b = chisq.test(tab9)
+  a = CrossTable(tab9, na.rm = TRUE)
+  TraceTable("Table",
+             "moustiquaire", 
+             a[["t"]])
+  TraceTable("Table théorique",
+             "moustiquaire",
+             round(b[["expected"]],digits = 2))
+  TraceTable("Profil ligne",
+             "moustiquaire",
+             round(a[["prop.row"]],digits = 2))
+  TraceTable("Profil colonne", 
+             "moustiquaire",
+             round(a[["prop.col"]],digits = 2))
+  TraceTable("P-value",
+             "moustiquaire",
+             round(data.frame(chi_2 = b[["statistic"]][["X-squared"]] ,p_value = b[["p.value"]], digits = 2 ) ) )  
+dev.off()
+
+
+
+pdf(file = "test5.PDF",
+    width = 6,
+    height = 3)
+  
+  b = chisq.test(tab10)
+  a = CrossTable(tab10, na.rm = TRUE)
+  TraceTable("Table",
+             "bateau/moteur", 
+             a[["t"]])
+  TraceTable("Table théorique",
+             "bateau/moteur",
+             round(b[["expected"]],digits = 2))
+  TraceTable("Profil ligne",
+             "bateau/moteur",
+             round(a[["prop.row"]],digits = 2))
+  TraceTable("Profil colonne", 
+             "bateau/moteur",
+             round(a[["prop.col"]],digits = 2))
+  TraceTable("P-value",
+             "bateau/moteur",
+             round(data.frame(chi_2 = b[["statistic"]][["X-squared"]] ,p_value = b[["p.value"]], digits = 2 ) ) )  
+dev.off()
+
+
+
+pdf(file = "test6.PDF",
+    width = 6,
+    height = 3)
+  
+  b = chisq.test(tab11)
+  a = CrossTable(tab11, na.rm = TRUE)
+  TraceTable("Table",
+             "ordinateur", 
+             a[["t"]])
+  TraceTable("Table théorique",
+             "ordinateur",
+             round(b[["expected"]],digits = 2))
+  TraceTable("Profil ligne",
+             "ordinateur",
+             round(a[["prop.row"]],digits = 2))
+  TraceTable("Profil colonne", 
+             "ordinateur",
+             round(a[["prop.col"]],digits = 2))
+  TraceTable("P-value",
+             "ordinateur",
+             round(data.frame(chi_2 = b[["statistic"]][["X-squared"]] ,p_value = b[["p.value"]], digits = 2 ) ) )  
+dev.off()
+
+
+
+pdf(file = "test7.PDF",
+    width = 6,
+    height = 3)
+  
+  b = chisq.test(tab12)
+  a = CrossTable(tab12, na.rm = TRUE)
+  TraceTable("Table",
+             "agriculture", 
+             a[["t"]])
+  TraceTable("Table théorique",
+             "agriculture",
+             round(b[["expected"]],digits = 2))
+  TraceTable("Profil ligne",
+             "agriculture",
+             round(a[["prop.row"]],digits = 2))
+  TraceTable("Profil col.", 
+             "agriculture",
+             round(a[["prop.col"]],digits = 2))
+  TraceTable("P-value",
+             "agriculture",
+             round(data.frame(chi_2 = b[["statistic"]][["X-squared"]] ,p_value = b[["p.value"]], digits = 2 ) ) )  
+  
+dev.off()
+
+
+
+pdf(file = "test8.PDF",
+    width = 6,
+    height = 3)
+  
+  b = chisq.test(tab13)
+  a = CrossTable(tab13, na.rm = TRUE)
+  TraceTable("Table",
+             "bétail", 
+             a[["t"]])
+  TraceTable("Table théorique",
+             "bétail",
+             round(b[["expected"]],digits = 2))
+  TraceTable("Profil ligne",
+             "bétail",
+             round(a[["prop.row"]],digits = 2))
+  TraceTable("Profil colonne", 
+             "bétail",
+             round(a[["prop.col"]],digits = 2))
+  TraceTable("P-value",
+             "bétail",
+             data.frame(chi_2 = b[["statistic"]][["X-squared"]] ,p_value = b[["p.value"]] ) )  
+dev.off()
+
+#Pourcentage de valeurs manquantes
+
+v<-apply(menage,1,function(x) sum(is.na(x)))
+
+sum(v)/(nrow(menage)*ncol(menage))
+
+menage
+
+
+```
+
+
+
+```{r ACM préparation du jeu de données}
+
+#Sélection des variables d'intérêt 
+
+
+menage1 <- menage %>% select(HV025,HV206:HV212, HV243A,HV243B, HV243E:SH121G, SH121I:SH121P, SH121R)
+
+colnames(menage1) <- c("resi","elec", "radio", "televi", "refri", "velo", "moto", "voit","tel_mobi", "montre", "ordi", "t_agri", "f_anim", "mate", "lit","table", "canap", "poel_tra", "poele", "arm", "table_m", "fer_rep", "anten")
+
+
+menage1 <- menage1 %>% drop_na() # Suppression des lignes à valeurs manquantes
+
+
+
+#Pourcentage de menage avec une donnée manquante
+
+1 - nrow(menage1)/nrow(menage)
+
+```
+
+
+
+```{r couleurs pour les graphes}
+
+# Appication des couleurs du package wesanderson
+
+pal <- wes_palette("Rushmore1", 100, type = "continuous")
+
+```
+
+
+
+```{r ACM1 Burt}
+
+#burt = acm.burt(menage1,menage1)
+
+#burt
+
+acm1=MCA(menage1, graph = TRUE, method="Burt")
+
+
+
+pdf(file = "ACM_Burt.PDF",
+    width = 13,
+    height = 14)
+
+TraceTable("Valeur Propre","",round(acm1$eig, digits=2))
+TraceTable("ACM Burt repr","",round(acm1$var$cos2,digits = 2))
+TraceTable("ACM Burt Contr","",round(acm1$var$contrib,digits = 2))
+TraceTable("ACM Burt Coord","",round(acm1$var$coord,digits = 2))
+ 
+fviz_eig(acm1)
+
+fviz_mca_var(acm1, col.var = "cos2",gradient.cols = pal)
+
+fviz_mca_var(acm1,select.var = list(cos2 = 0.5), col.var = "darkred", title= "ACM avec Cos2 >= 0.5")
+
+plot(acm1,label = c("var"), col.var = "red")
+
+dev.off()
+
+
+fviz_mca_var(acm1,col.var = "cos2",  gradient.cols = pal)
+
+
+fviz_mca_var(acm1,select.var = list(cos2 = 0.5), col.var = "darkred", title= "ACM avec Cos2 >= 0.5")
+
+
+
+
+#Calcul des taux d'inertie modifiés
+
+delta = (acm1$eig[1:23,1]-1/10)^2
+
+Itilde=delta/sum(delta);
+
+Itilde
+
+
+
+
+```
+
+
+
+
+```{r ACM2 Disjonctif}
+
+#disj=acm.disjonctif(menage1)
+#disj
+
+acm2=MCA(menage1, graph = TRUE)
+
+
+
+pdf(file = "ACM_TDC.PDF",
+    width = 13,
+    height = 14)
+
+TraceTable("Valeur Propre","",round(acm2$eig, digits=2))
+TraceTable("ACM TDC repr","",round(acm2$var$cos2,digits = 2))
+TraceTable("ACM TDC Contr","",round(acm2$var$contrib,digits = 2))
+TraceTable("ACM TDC Coord","",round(acm2$var$coord,digits = 2))
+
+fviz_eig(acm2)
+
+fviz_mca_var(acm2, col.var = "cos2",  gradient.cols = pal)
+
+fviz_mca_var(acm2,select.var = list(cos2 = 0.25), col.var = "darkred", title= "ACM avec Cos2 >= 0.25")
+
+plot(acm2,label = c("var"), col.var = "red")
+
+dev.off()
+
+
+
+fviz_mca_var(acm2, col.var = "cos2",  gradient.cols = pal)
+
+fviz_mca_var(acm2,select.var = list(cos2 = 0.25), col.var = "darkred", title= "ACM avec Cos2 >= 0.25")
+
+```
+
+```{r ACM avec variables supplémentaires}
+
+menage2 <- MENAGE %>% select( HHID, HV005, HV009, HV014, HV024, HV025, HV201:HV228, HV235, HV243A:HV243E, HV244, HV246, HV270, SH121G:SH122I)
+                                  
+
+#Suppression des variables HV202, HV201A, HV228 et HV235 qui possèdent trop de valeurs manquantes 
+
+menage2 <- menage2[,c(-8,-9,-28,-31,-32)]
+
+
+var_label(menage2) <- list(HHID = "Identifiant", 
+                          HV005 = "Poids de l'échantillon du ménage", 
+                          HV009 = "Nombre de membres du ménage", 
+                          HV014 = "Nombre d'enfant de 5 ans et moins",
+                          HV024 = "Region", 
+                          HV025 = "Type du lieu de résidence",
+                          HV201 = "Source d'eau potable",
+                          HV204 ="Temps pour se rendre à la source d'eau (en min)",
+                          HV205 ="Type d'installations sanitaires", 
+                          HV206 ="Possède l'électricité", 
+                          HV207 ="Possède une radio", 
+                          HV208 ="Possède une télévision", 
+                          HV209 ="Possède un réfrigérateur",
+                          HV210 ="Possède un vélo",
+                          HV211 ="Possède une moto/scooter",
+                          HV212 ="Possède une voiture/camion", 
+                          HV213 ="Matériau principal du sol", 
+                          HV214 ="Matériau principal du mur",
+                          HV215 ="Matériau principal du toit",
+                          HV216 ="Nombre de pièces utilisées pour dormir",
+                          HV217 ="Structure des relations",
+                          HV218 ="Numéro de ligne du chef de famille",
+                          HV219 ="Sexe du chef du ménage",
+                          HV220 ="Age du chef du ménage",
+                          HV221 ="Possède un téléphone fixe",
+                          HV226 ="Type de combustible de cuisson",
+                          HV227 ="Possède une moustiquaire",
+                          HV243A = "Possède un téléphone mobile",
+                          HV243B = "Possède une montre",
+                          HV243C = "Possède un chariot de tirage animal",
+                          HV243D = "Possède un bateau avec moteur",
+                          HV243E = "Possède un ordinateur",
+                          HV244 = "Possède un terrain pour l'agriculture",
+                          HV246 = "Possède du bétail/troupeau/ferme animale",
+                          HV270 = "Niveau de richesse",
+                          SH121G = "Possède un matelas",                                         
+                          SH121H = "Possède un banc ou 3 chaises au moins",
+                          SH121I = "Possède un lit",                                             
+                          SH121J = "Possède un table",                                           
+                          SH121K = "Possède un canapé",                                            
+                          SH121L = "Possède une poêle traditionnelle amélioréé",
+                          SH121M = "Possède un poêle",
+                          SH121N = "Possède une armoire",
+                          SH121O = "Possède une table à manger", 
+                          SH121P = "Possède un fer à repasser",
+                          SH121Q = "Possède une machine à laver",    
+                          SH121R = "Possède une antenne parabolique",
+                          SH122H = "Possède un bateau sans moteur",
+                          SH122I = "Possède une caméra")
+
+```
+
+
+
+```{r les modalités des variables intéressantes}
+
+
+menage2[5] <- as.character(menage2[[5]])
+menage2[5] <- fct_recode(menage2[[5]],
+                        "kigali" = "1",
+                        "sud" = "2",
+                        "ouest" = "3",
+                        "nord" = "4",
+                        "est" = "5")
+
+
+menage2[6] <- as.character(menage2[[6]])
+menage2[6] <- fct_recode(menage2[[6]],
+                        "urbain" = "1",  
+                        "rural" = "2")
+
+
+
+
+menage2[23] <- as.character(menage2[[23]])
+menage2[23] <- fct_recode(menage2[[23]],
+                         "male" = "1" ,
+                         "female"= "2",
+                         NULL = "9")
+
+
+
+
+menage2[25] <- as.character(menage2[[25]])
+menage2[25] <- fct_recode(menage2[[25]],
+                         "No" = "0" ,
+                         "Yes"= "1",
+                         NULL = "9")
+
+
+
+
+for (i in 10:16) {
+menage2[i] <- as.character(menage2[[i]])
+menage2[i] <- fct_recode(menage2[[i]],
+"No" = "0" ,
+"Yes" = "1",
+NULL = "9")
+}
+
+
+
+for (i in 27:34) {
+menage2[i] <- as.character(menage2[[i]])
+menage2[i] <- fct_recode(menage2[[i]],
+"No" = "0" ,
+"Yes"= "1",
+NULL = "9")
+}
+
+
+menage2[35] <- as.character(menage2[[35]])
+menage2[35] <- fct_recode(menage2[[35]],
+                         "tr_riche" = "5", 
+                         "riche" = "4", 
+                         "moyen" = "3", 
+                         "pauvre" = "2", 
+                         "tr_pauvre" = "1")
+
+for (i in 36:49) {
+menage2[i] <- as.character(menage2[[i]])
+menage2[i] <- fct_recode(menage2[[i]],
+"No" = "0" ,
+"Yes"= "1",
+NULL = "9")
+}
+
+
+
+```
+
+
+
+
+```{r préparation du jeu de donnnés}
+
+menage3 <- menage2 %>% select(HV024,HV025,HV206:HV212,HV219,HV243A,HV243B, HV243E:SH121G, SH121I:SH121P, SH121R)
+
+colnames(menage3) <- c("region","resi","elec", "radio", "televi", "refri", "velo", "moto", "voit","sexe","tel_mobi", "montre", "ordi", "t_agri", "f_anim","richesse" ,"mate", "lit","table", "canap", "poel_tra", "poele", "arm", "table_m", "fer_rep", "anten")
+
+
+menage3 <- menage3 %>% drop_na()
+
+
+
+#Pourcentage de menage avec une donnée manquante
+
+1 - nrow(menage3)/nrow(menage2)
+
+```
+
+
+```{r ACM3 avec variables supplémentaires}
+
+
+#burt3=acm.burt(menage3,menage3)
+
+#burt3
+
+acm3=MCA(menage3, quali.sup = c(1,10,16), graph = TRUE, method="Burt")
+
+
+
+
+pdf(file = "ACM_supp.PDF",
+    width = 13,
+    height = 14)
+
+TraceTable("Valeur Propre","",round(acm3$eig, digits=2))
+TraceTable("ACM Burt repr","",round(acm3$quali.sup$cos2,digits = 2))
+TraceTable("ACM Burt Contr","",round(acm3$var$contrib,digits = 2))
+TraceTable("ACM Burt Coord","",round(acm3$quali.sup$coord,digits = 2))
+TraceTable("Table des valeurs test", "",round(acm3$quali.sup$v.test, digits=2))
+
+
+fviz_eig(acm3)
+
+fviz_mca_var(acm3, col.var = "cos2",gradient.cols = wes_palette("GrandBudapest1", 100, type = "continuous"))
+
+fviz_mca_var(acm3,select.var = list(cos2 = 0.5), col.var = "darkred", title= "ACM avec Cos2 >= 0.5")
+
+plot(acm3,label = c("var"), col.var = "red")
+
+plotellipses(acm3,keepvar=c("region","resi","sexe","richesse"))
+
+dev.off()
+
+
+
+fviz_mca_var(acm3, col.var = "cos2",gradient.cols = wes_palette("GrandBudapest1", 100, type = "continuous"))
+
+
+fviz_mca_var(acm3,select.var = list(cos2 = 0.5), col.var = "darkred", title= "ACM avec Cos2 >= 0.5")
+
+
+plotellipses(acm3,keepvar=c("region","resi","sexe","richesse"))
+
+
+```
+
+
+
+
+
+
