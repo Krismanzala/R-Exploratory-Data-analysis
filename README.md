@@ -1,2 +1,2 @@
 # R-Exploratory Data analysis
-The goal of this project is to show how can use The R programming language for Exploratory Data analysis 
+The goal of this reprository is to show how The R programming language can be used for Exploratory Data analysis 
